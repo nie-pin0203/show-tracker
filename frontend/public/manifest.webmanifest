@@ -1,0 +1,16 @@
+{
+  "name": "Show Tracker 娱乐与活动追踪",
+  "short_name": "Show Tracker",
+  "lang": "zh-CN",
+  "description": "追踪影视、赛事、演出、音乐节和活动。",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fa",
+  "theme_color": "#12695d",
+  "icons": [
+    {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

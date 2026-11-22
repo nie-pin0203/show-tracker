@@ -1,0 +1,732 @@
+{
+  "scale": 1,
+  "confidence": null,
+  "engine": "Windows OCR",
+  "width": 297,
+  "confidence_available": false,
+  "requires_confirmation": true,
+  "height": 669,
+  "language": "zh-Hans-CN",
+  "lines": [
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 341,
+            "width": 17,
+            "height": 9,
+            "x": 55
+          },
+          "id": 0,
+          "text": "26B"
+        }
+      ],
+      "id": 0,
+      "text": "26B"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 341,
+            "width": 16,
+            "height": 8,
+            "x": 93
+          },
+          "id": 0,
+          "text": "27B"
+        }
+      ],
+      "id": 1,
+      "text": "27B"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 341,
+            "width": 18,
+            "height": 9,
+            "x": 166
+          },
+          "id": 0,
+          "text": "29d"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 341,
+            "width": 19,
+            "height": 9,
+            "x": 201
+          },
+          "id": 1,
+          "text": "30a"
+        }
+      ],
+      "id": 2,
+      "text": "29d 30a"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 444,
+            "width": 9,
+            "height": 12,
+            "x": 132
+          },
+          "id": 0,
+          "text": "持"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 444,
+            "width": 8,
+            "height": 11,
+            "x": 143
+          },
+          "id": 1,
+          "text": "续"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 444,
+            "width": 10,
+            "height": 11,
+            "x": 152
+          },
+          "id": 2,
+          "text": "瞬"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 444,
+            "width": 9,
+            "height": 11,
+            "x": 163
+          },
+          "id": 3,
+          "text": "浈"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 444,
+            "width": 8,
+            "height": 11,
+            "x": 173
+          },
+          "id": 4,
+          "text": "中"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 452,
+            "width": 7,
+            "height": 3,
+            "x": 183
+          },
+          "id": 5,
+          "text": "·"
+        }
+      ],
+      "id": 3,
+      "text": "持 续 瞬 浈 中 ·"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 485,
+            "width": 10,
+            "height": 12,
+            "x": 117
+          },
+          "id": 0,
+          "text": "腾"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 485,
+            "width": 11,
+            "height": 11,
+            "x": 128
+          },
+          "id": 1,
+          "text": "讯"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 485,
+            "width": 10,
+            "height": 12,
+            "x": 139
+          },
+          "id": 2,
+          "text": "視"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 485,
+            "width": 9,
+            "height": 11,
+            "x": 162
+          },
+          "id": 3,
+          "text": "全"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 486,
+            "width": 9,
+            "height": 11,
+            "x": 173
+          },
+          "id": 4,
+          "text": "网"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 485,
+            "width": 9,
+            "height": 11,
+            "x": 184
+          },
+          "id": 5,
+          "text": "独"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 485,
+            "width": 11,
+            "height": 12,
+            "x": 194
+          },
+          "id": 6,
+          "text": "播"
+        }
+      ],
+      "id": 4,
+      "text": "腾 讯 視 全 网 独 播"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 501,
+            "width": 10,
+            "height": 12,
+            "x": 117
+          },
+          "id": 0,
+          "text": "会"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 501,
+            "width": 8,
+            "height": 12,
+            "x": 129
+          },
+          "id": 1,
+          "text": "员"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 501,
+            "width": 10,
+            "height": 11,
+            "x": 139
+          },
+          "id": 2,
+          "text": "每"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 502,
+            "width": 12,
+            "height": 10,
+            "x": 152
+          },
+          "id": 3,
+          "text": "田"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 502,
+            "width": 6,
+            "height": 10,
+            "x": 166
+          },
+          "id": 4,
+          "text": "8"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 501,
+            "width": 9,
+            "height": 12,
+            "x": 173
+          },
+          "id": 5,
+          "text": "点"
+        }
+      ],
+      "id": 5,
+      "text": "会 员 每 田 8 点"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 517,
+            "width": 13,
+            "height": 11,
+            "x": 125
+          },
+          "id": 0,
+          "text": "SV"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 518,
+            "width": 9,
+            "height": 10,
+            "x": 139
+          },
+          "id": 1,
+          "text": "甲"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 517,
+            "width": 10,
+            "height": 11,
+            "x": 149
+          },
+          "id": 2,
+          "text": "抢"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 517,
+            "width": 9,
+            "height": 11,
+            "x": 160
+          },
+          "id": 3,
+          "text": "先"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 517,
+            "width": 9,
+            "height": 12,
+            "x": 171
+          },
+          "id": 4,
+          "text": "看"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 518,
+            "width": 2,
+            "height": 10,
+            "x": 183
+          },
+          "id": 5,
+          "text": "》"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 517,
+            "width": 10,
+            "height": 12,
+            "x": 187
+          },
+          "id": 6,
+          "text": "集"
+        }
+      ],
+      "id": 6,
+      "text": "SV 甲 抢 先 看 》 集"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 532,
+            "width": 9,
+            "height": 13,
+            "x": 112
+          },
+          "id": 0,
+          "text": "点"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 533,
+            "width": 10,
+            "height": 11,
+            "x": 123
+          },
+          "id": 1,
+          "text": "映"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 533,
+            "width": 10,
+            "height": 12,
+            "x": 134
+          },
+          "id": 2,
+          "text": "札"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 533,
+            "width": 10,
+            "height": 12,
+            "x": 145
+          },
+          "id": 3,
+          "text": "抢"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 533,
+            "width": 10,
+            "height": 11,
+            "x": 156
+          },
+          "id": 4,
+          "text": "光"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 532,
+            "width": 9,
+            "height": 13,
+            "x": 167
+          },
+          "id": 5,
+          "text": "看"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 533,
+            "width": 10,
+            "height": 11,
+            "x": 178
+          },
+          "id": 6,
+          "text": "大"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 532,
+            "width": 10,
+            "height": 12,
+            "x": 189
+          },
+          "id": 7,
+          "text": "结"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 533,
+            "width": 10,
+            "height": 12,
+            "x": 200
+          },
+          "id": 8,
+          "text": "局"
+        }
+      ],
+      "id": 7,
+      "text": "点 映 札 抢 光 看 大 结 局"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 576,
+            "width": 10,
+            "height": 9,
+            "x": 115
+          },
+          "id": 0,
+          "text": "汛"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 576,
+            "width": 10,
+            "height": 10,
+            "x": 148
+          },
+          "id": 1,
+          "text": "頻"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 575,
+            "width": 8,
+            "height": 10,
+            "x": 165
+          },
+          "id": 2,
+          "text": "自"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 576,
+            "width": 10,
+            "height": 10,
+            "x": 181
+          },
+          "id": 3,
+          "text": "鬍"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 576,
+            "width": 10,
+            "height": 9,
+            "x": 197
+          },
+          "id": 4,
+          "text": "剧"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 575,
+            "width": 10,
+            "height": 10,
+            "x": 214
+          },
+          "id": 5,
+          "text": "雲"
+        }
+      ],
+      "id": 8,
+      "text": "汛 頻 自 鬍 剧 雲"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 601,
+            "width": 32,
+            "height": 28,
+            "x": 92
+          },
+          "id": 0,
+          "text": "正"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 599,
+            "width": 32,
+            "height": 31,
+            "x": 126
+          },
+          "id": 1,
+          "text": "在"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 599,
+            "width": 33,
+            "height": 31,
+            "x": 162
+          },
+          "id": 2,
+          "text": "热"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 599,
+            "width": 33,
+            "height": 31,
+            "x": 197
+          },
+          "id": 3,
+          "text": "播"
+        }
+      ],
+      "id": 9,
+      "text": "正 在 热 播"
+    },
+    {
+      "confidence": null,
+      "words": [
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 6,
+            "height": 14,
+            "x": 83
+          },
+          "id": 0,
+          "text": "："
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 10,
+            "height": 13,
+            "x": 119
+          },
+          "id": 1,
+          "text": "球"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 14,
+            "height": 13,
+            "x": 139
+          },
+          "id": 2,
+          "text": "讯"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 14,
+            "height": 14,
+            "x": 153
+          },
+          "id": 3,
+          "text": "视"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 14,
+            "height": 14,
+            "x": 168
+          },
+          "id": 4,
+          "text": "頻"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 649,
+            "width": 1,
+            "height": 12,
+            "x": 189
+          },
+          "id": 5,
+          "text": "《"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 13,
+            "height": 14,
+            "x": 196
+          },
+          "id": 6,
+          "text": "极"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 648,
+            "width": 14,
+            "height": 14,
+            "x": 210
+          },
+          "id": 7,
+          "text": "光"
+        },
+        {
+          "confidence": null,
+          "box": {
+            "y": 649,
+            "width": 22,
+            "height": 12,
+            "x": 224
+          },
+          "id": 8,
+          "text": "TV"
+        }
+      ],
+      "id": 10,
+      "text": "： 球 讯 视 頻 《 极 光 TV"
+    }
+  ],
+  "mode": "standard",
+  "coordinate_space": "decoded_bitmap_pixels",
+  "text": "26B\n27B\n29d 30a\n持 续 瞬 浈 中 ·\n腾 讯 視 全 网 独 播\n会 员 每 田 8 点\nSV 甲 抢 先 看 》 集\n点 映 札 抢 光 看 大 结 局\n汛 頻 自 鬍 剧 雲\n正 在 热 播\n： 球 讯 视 頻 《 极 光 TV",
+  "text_angle": 0,
+  "image_sha256": "cf0edaba9d346d5bf50bf51e316725548561f00d02d1ccfd58f10096ac64c26b"
+}
