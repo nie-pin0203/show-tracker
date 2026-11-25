@@ -1,4 +1,4 @@
-import { matchingPlatform, showById, upsertWork, videoIdentity } from './localMedia.js'
+import { matchingPlatform, showById, upsertWork } from './localMedia.js'
 import { safeUrl, validateTree } from './localStore.js'
 
 function csvRows(content) {
@@ -100,51 +100,3 @@ export function importRows(data, body, method, commit) {
     committed: commit, items }
 }
 
-const field = (value, evidence = '') => ({ value: value ?? null, evidence: evidence ? [evidence] : [],
-  reason: value == null ? '缺少明确证据，请人工补充' : null, confirmed: false })
-
-export async function parseText({ text, source_url, platform }) {
-  if (typeof text !== 'string' || !text.trim() || text.length > 30000) throw new Error('粘贴文本需为 1～30000 字')
-  const lines = text.split(/\r?\n/).map(line => line.trim())
-  const find = (re, transform = x => x) => {
-    const matches = lines.flatMap(line => {
-      const match = re.exec(line)
-      return match ? [[transform(match[1]), line]] : []
-    })
-    return matches.length === 1 ? field(...matches[0]) : field(null)
-  }
-  let link
-  try { link = videoIdentity(source_url) } catch { /* An editable unknown field remains visible. */ }
-  const align = link?.platform === platform ? link : null
-  const rating = find(/^豆瓣评分\s*[:：]?\s*(\d+(?:\.\d+)?)\s*分?$/, Number)
-  const fields = {
-    title: find(/^(?:作品名称|作品名|名称|片名|剧名|节目名|标题)\s*[:：]\s*(.+)$/),
-    category: find(/^(?:类型|分类)\s*[:：]\s*(电视剧|综艺|国漫|动漫|电影)$/, v => ({电视剧:'drama',综艺:'variety',国漫:'animation',动漫:'animation',电影:'movie'})[v]),
-    source_id: field(align?.source_id, source_url), source_url: field(align?.url, source_url),
-    premiere_date: find(/^(?:开播日期|首映日期)\s*[:：]\s*(\d{4}-\d{2}-\d{2})$/),
-    total_episodes: find(/^\s*(?:总集数[:：]\s*|共\s*)(\d+)\s*[集期]?$/, Number),
-    latest_episode: find(/^更新至\s*(\d+)\s*(?:\/\s*\d+)?\s*集$/, Number),
-    audience: field(null), captured_at: field(null),
-    score: platform === '豆瓣' ? rating : field(null),
-    rating_count: platform === '豆瓣' ? find(/^(\d+)\s*人评分$/, Number) : field(null),
-    rating_source: field(platform === '豆瓣' && rating.value != null ? platform : null, rating.evidence[0]),
-    rating_url: field(platform === '豆瓣' && rating.value != null ? align?.url : null, source_url),
-  }
-  // The explicit format is also emitted by the existing screenshot correction tools.
-  const schedules = lines.flatMap(line => {
-    const match = /^(\d{4}-\d{2}-\d{2})\s+(SVIP|VIP|免费|非会员)\s*(预计|已确认|实际)?\s*更新\s*第?(\d+)\s*(?:[-–—至]\s*(\d+))?\s*([集期])/.exec(line)
-    if (!match) return []
-    const [, day, tier, status, start, end, unit] = match
-    const part = line.includes('上期') ? 'upper' : line.includes('下期') ? 'lower' : 'full'
-    const isPeriod = unit === '期' && !end
-    const values = { update_date: day, audience: ({ VIP:'vip', SVIP:'svip', 免费:'free', 非会员:'free' })[tier],
-      schedule_status: ({ 预计:'expected', 已确认:'confirmed', 实际:'actual' })[status] || 'expected',
-      episode_start: isPeriod ? null : Number(start), episode_end: isPeriod ? null : Number(end || start),
-      planned_count: Number(end || start) - Number(start) + 1, period_number: isPeriod ? Number(start) : null,
-      period_date: null, period_part: isPeriod ? part : null }
-    return [{ evidence: line, confirmed: false, fields: Object.fromEntries(Object.entries(values).map(([k,v]) => [k, field(v,line)])) }]
-  })
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
-  const text_hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')
-  return { fields, schedules, text_hash, warnings: ['仅识别有完整日期、明确层级和期/集号的原文。其余内容请手动核对。'] }
-}

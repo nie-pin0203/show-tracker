@@ -2,6 +2,7 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { readActivities } from './library'
 import CompetitionEditor from './CompetitionEditor.vue'
+import ManualAdd from './ManualAdd.vue'
 import { compareMatches, displayMoment, eventTypes, outcomes, sections, statuses } from './competitions'
 
 const props = defineProps({ kind: String, eventId: String })
@@ -67,8 +68,8 @@ onUnmounted(() => {
           <button class="tracker-button secondary" type="submit">筛选</button>
         </form>
         <details class="competition-panel" :open="editing" @toggle="editing = $event.target.open">
-          <summary>新增赛事或导入文件</summary>
-          <CompetitionEditor :kind="kind" :disciplines="data.disciplines" @saved="saved" />
+          <summary>添加赛事</summary>
+          <ManualAdd :kind="kind" @saved="saved" />
         </details>
         <p v-if="!data.items.length" class="state">暂无匹配赛事。</p>
         <ul v-else class="competition-cards">
@@ -89,11 +90,12 @@ onUnmounted(() => {
         <p v-if="bundle.event.season">赛季 / 届次 {{ bundle.event.season }}</p>
         <p>开始 {{ displayMoment(bundle.event.starts_at) }}　结束 {{ displayMoment(bundle.event.ends_at) }}</p>
         <p class="muted">来源核对 {{ displayMoment(bundle.event.observed_at) }} · 版本 {{ data.version }}</p>
-        <a :href="bundle.event.source_url" class="source-link" rel="noopener noreferrer" target="_blank">赛事来源</a>
+        <p v-if="bundle.event.description">{{ bundle.event.description }}</p>
+        <a v-if="bundle.event.source_url" :href="bundle.event.source_url" class="source-link" rel="noopener noreferrer" target="_blank">赛事来源</a>
       </section>
       <details class="competition-panel" :open="editing" @toggle="editing = $event.target.open">
         <summary>编辑赛事、赛程和结果</summary>
-        <CompetitionEditor :key="data.version" :kind="kind" :initial="data" @saved="saved" />
+        <CompetitionEditor :key="data.version" :kind="kind" :initial="data" @saved="saved" @cancelled="editing=false" />
       </details>
       <section class="competition-panel">
         <h2>参赛对象</h2>

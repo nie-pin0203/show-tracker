@@ -1,10 +1,9 @@
 import 'fake-indexeddb/auto'
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { commitActivity, commitWorkImport, inspectLink, listFollows, listLinks, listShows,
+import { commitActivity, commitWorkImport, listFollows, listLinks, listShows,
   readActivities, readCalendar, readShow, readToday, readWeek, removeLink,
-  reviewActivity, reviewWorkImport, saveFollow, saveWatchState, writeLink } from './library.js'
-import { parseText } from './localImport.js'
+  reviewActivity, reviewWorkImport, saveFollow, saveWatchState } from './library.js'
 import { emptyLibrary, exportLibrary, importLibrary, readBackup } from './localStore.js'
 import { beijingDate } from './calendar.js'
 
@@ -92,16 +91,10 @@ test('preview is read-only, rejects a mixed invalid import and protects intentio
   assert.equal((await listShows())[0].title,'新名称')
 })
 
-test('CSV quoting and independently managed links work without treating URLs as fetch targets', async () => {
+test('CSV quoting remains compatible', async () => {
   await clear()
-  const body = { format:'csv', content:'title,category,platform,source_id\r\n"剧集,续篇",drama,优酷,csv-1' }
-  await commit(body)
-  const details = { title:'第二部剧', category:'drama', detail_url:'https://v.qq.com/x/cover/example123.html' }
-  const item = await writeLink(details, { quick:true })
-  assert.equal((await inspectLink(details.detail_url)).existing.id,item.show_id)
-  await removeLink(item.id)
-  assert.equal((await readShow(item.show_id)).title,details.title)
-  assert.equal((await listLinks()).length,0)
+  await commit({format:'csv', content:'title,category,platform,source_id\r\n"剧集,续篇",drama,优酷,csv-1'})
+  assert.equal((await listShows())[0].title,'剧集,续篇')
 })
 
 test('manual activities share the existing calendar and follow navigation', async () => {
@@ -118,13 +111,3 @@ test('manual activities share the existing calendar and follow navigation', asyn
   assert.equal((await listFollows()).items[0].state,'active')
 })
 
-test('local parser only assigns explicit date and tier to screenshot corrections', async () => {
-  const parsed = await parseText({platform:'腾讯视频',
-    source_url:'https://v.qq.com/x/cover/example123.html',
-    text:'更新至22/30集\n2026-10-28 SVIP 已确认更新第13-14集 [截图证据]\n10月30日 题外文本'})
-  assert.equal(parsed.fields.latest_episode.value,22)
-  assert.equal(parsed.fields.audience.value,null)
-  assert.equal(parsed.schedules.length,1)
-  assert.equal(parsed.schedules[0].fields.audience.value,'svip')
-  assert.equal(parsed.schedules[0].confirmed,false)
-})

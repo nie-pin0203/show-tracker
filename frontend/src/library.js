@@ -1,7 +1,9 @@
 import { addDays, beijingDate } from './calendar.js'
 import { withLibrary } from './localStore.js'
-import { addRating, date, deleteShow, identifyLink, releasesFor, saveLink, schedulesOn,
-  showById, viewShow, videoIdentity, watchState } from './localMedia.js'
+import { addRating, date, deleteShow, releasesFor, schedulesOn,
+  showById, viewShow, watchState } from './localMedia.js'
+import { createManual } from './manualForms.js'
+import { safeUrl } from './localStore.js'
 import { importRows } from './localImport.js'
 import { bundleAction, bundleRead, followList, saveDisplay, trackerCalendar, updateFollow } from './localTracker.js'
 
@@ -30,6 +32,7 @@ export function readShow(id) {
   return withLibrary(data => {
     const show = showById(data, id)
     return { ...viewShow(data, show), schedules: data.schedules.filter(row => row.show_id === show.id),
+      links: data.links.filter(row => row.show_id === show.id),
       rating_history: data.ratings.filter(row => row.show_id === show.id).sort((a, b) => b.id - a.id),
       releases: releasesFor(data, show.id) }
   })
@@ -47,21 +50,13 @@ export function listLinks() {
   return withLibrary(data => data.links.map(row => ({ ...row, title: showById(data, row.show_id).title })))
 }
 
-export function inspectLink(url, title) {
-  return withLibrary(data => identifyLink(data, url, title))
-}
-
-export function writeLink(fields, { id, quick = false } = {}) {
-  return withLibrary(data => saveLink(data, fields, id, quick), true)
-}
-
 export function removeLink(id) {
   return withLibrary(data => { data.links = data.links.filter(row => row.id !== Number(id)) }, true)
 }
 
 export function saveDoubanRating(id, fields) {
   return withLibrary(data => {
-    if (videoIdentity(fields.url).platform !== '豆瓣' || !fields.reviewed_at) throw new Error('请填写豆瓣作品 URL 和核对日期')
+    if (!safeUrl(fields.url) || new URL(fields.url).hostname !== 'movie.douban.com' || !fields.reviewed_at) throw new Error('请填写豆瓣作品 URL 和核对日期')
     return addRating(data, showById(data, id), { ...fields, captured_at: fields.reviewed_at,
       rating_source: '豆瓣', rating_url: fields.url })
   }, true)
@@ -77,7 +72,7 @@ export function readEditableWork(id) {
       record: { title: show.title, category: show.category, platform: platform.platform,
         source_id: platform.source_id, source_url: platform.source_url, poster_url: show.poster_url,
         total_episodes: show.total_episodes, premiere_date: show.premiere_date, captured_at: new Date().toISOString(),
-        audience: 'unknown', source_note: platform.source_note },
+        audience: 'unknown', source_note: platform.source_note, link_show_id: show.id },
       schedules: data.schedules.filter(row => row.platform_id === platformId),
       ratings: data.ratings.filter(row => row.show_id === show.id),
       releases: releasesFor(data, show.id).filter(row => row.platform_id === platformId),
@@ -123,4 +118,8 @@ export function readDisplay() {
 
 export function saveDisplayOptions(fields) {
   return withLibrary(data => saveDisplay(data, fields), true)
+}
+
+export function saveManual(kind, fields) {
+  return withLibrary(data => createManual(data, kind, fields), true)
 }

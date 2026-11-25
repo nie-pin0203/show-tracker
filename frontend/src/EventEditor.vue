@@ -6,7 +6,7 @@ import { formats, kinds, roles, sections, ticketKinds } from './liveEvents'
 import { useOfflineForm } from './useOfflineForm'
 
 const props = defineProps({ kind: String, initial: Object, categories: Array })
-const emit = defineEmits(['saved'])
+const emit = defineEmits(['saved', 'cancelled'])
 const fresh = () => ({
   kind: props.kind,
   event: { source_id: '', title: '', description: '', status: 'expected', source_url: '', observed_at: new Date().toISOString() },
@@ -20,7 +20,7 @@ const { previous, restored, restore, clear } = useOfflineForm(bundle,
   `event/${props.kind}/${props.initial?.id || 0}`, props.initial?.version || 0,
   draft => draft?.kind === props.kind && draft.event
     && ['people', 'sessions', 'stages', 'sets', 'tickets'].every(key => Array.isArray(draft[key])))
-const mode = ref('manual'), file = ref(null), preview = ref(null), approved = ref(false)
+const preview = ref(null), approved = ref(false)
 const busy = ref(false), error = ref('')
 const span = [
   ['source_id', '来源标识'], ['title', '名称'], ['starts_at', '开始日期或时间'], ['ends_at', '结束日期或时间'],
@@ -55,25 +55,13 @@ function chooseCategory(event) {
   const category = props.categories?.find(value => value.code === event.target.value)
   if (category) bundle.value.category = { ...category }
 }
-watch([bundle, mode, file], () => { preview.value = null; approved.value = false }, { deep: true })
+watch(bundle, () => { preview.value = null; approved.value = false }, { deep: true })
 
-async function readFile(event) {
-  file.value = null
-  error.value = ''
-  const selected = event.target.files[0]
-  if (!selected) return
-  try {
-    if (selected.size > 1024 * 1024 || !selected.name.toLowerCase().endsWith('.json')) throw new Error('请选择 1 MiB 以内的 JSON 文件')
-    const parsed = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(await selected.arrayBuffer()))
-    if (parsed?.kind !== props.kind) throw new Error('文件中的活动类别与当前页面不符')
-    file.value = parsed
-  } catch (e) { error.value = e.message }
-}
 async function run(action) {
   busy.value = true
   error.value = ''
   try {
-    const content = mode.value === 'file' ? file.value : JSON.parse(JSON.stringify(bundle.value, (_, v) => v === '' ? null : v))
+    const content = JSON.parse(JSON.stringify(bundle.value, (_, v) => v === '' ? null : v))
     if (!content) throw new Error('请先选择文件')
     const base = props.initial ? { event_id: props.initial.id, version: props.initial.version } : {}
     const write = action === 'commit' ? commitActivity : reviewActivity
@@ -96,13 +84,7 @@ async function run(action) {
       <button type="button" @click="restore">载入草稿并重新核对差异</button>
     </p>
     <fieldset :disabled="busy">
-      <label v-if="!initial">录入方式
-        <select v-model="mode"><option value="manual">手动录入</option><option value="file">导入 JSON</option></select>
-      </label>
-      <label v-if="mode === 'file'">单项{{ kinds[kind] }} JSON 文件
-        <input type="file" accept=".json,application/json" @change="readFile">
-      </label>
-      <template v-else>
+      <template>
         <div class="event-editor-grid">
           <label>活动来源标识<input v-model="bundle.event.source_id" :readonly="!!initial" maxlength="100"></label>
           <label>名称<input v-model="bundle.event.title" maxlength="200"></label>
@@ -146,7 +128,7 @@ async function run(action) {
           <button type="button" @click="addRow(section)">添加{{ sections[section] }}</button>
         </details>
       </template>
-      <button class="tracker-button" type="submit">{{ busy ? '处理中…' : '核对导入预览' }}</button>
+      <button class="tracker-button" type="submit">{{ busy ? '处理中…' : '核对修改预览' }}</button>
       <p v-if="error" class="error" role="alert">{{ error }}</p>
       <section v-if="preview">
         <p v-if="!preview.changes.length" role="status">内容与当前版本一致，无需重复保存。</p>
@@ -161,6 +143,7 @@ async function run(action) {
           <button class="tracker-button" type="button" :disabled="!approved" @click="run('commit')">确认保存</button>
         </template>
       </section>
+    <button type="button" class="tracker-button secondary" @click="bundle=JSON.parse(JSON.stringify(initial.bundle));preview=null;emit('cancelled')">取消</button>
     </fieldset>
   </form>
 </template>

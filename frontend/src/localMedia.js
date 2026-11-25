@@ -2,7 +2,7 @@ import { audienceLabels, beijingDate, scheduleLabels } from './calendar.js'
 import { recordId, safeUrl } from './localStore.js'
 import { releaseKinds, releaseStatuses } from './releases.js'
 
-export const platforms = ['腾讯视频', '爱奇艺', '优酷', '豆瓣']
+export const platforms = ['腾讯视频', '爱奇艺', '优酷', '哔哩哔哩', '芒果TV', '其他', '豆瓣']
 const categories = ['drama', 'variety', 'animation', 'movie']
 const audiences = Object.keys(audienceLabels)
 const now = () => new Date().toISOString()
@@ -221,54 +221,3 @@ export function upsertWork(data, record, sourceKind) {
   return show
 }
 
-const hostPlatform = { 'v.qq.com': '腾讯视频', 'www.iqiyi.com': '爱奇艺', 'iqiyi.com': '爱奇艺',
-  'v.youku.com': '优酷', 'www.youku.com': '优酷', 'movie.douban.com': '豆瓣' }
-
-export function videoIdentity(value) {
-  const url = new URL(safeUrl(value) || 'https://invalid.invalid')
-  const platform = hostPlatform[url.hostname]
-  if (!platform || url.protocol !== 'https:') throw new Error('请选择受支持平台的 HTTPS 详情链接')
-  const pattern = { 腾讯视频: /\/(?:cover|detail)\/([A-Za-z0-9]+)(?:\/|\.html|$)/,
-    爱奇艺: /^\/(?:v|a)_([A-Za-z0-9]+)\.html$/, 优酷: /^\/v_show\/id_([A-Za-z0-9=_-]+)\.html$/,
-    豆瓣: /^\/subject\/(\d+)\/?$/ }
-  const id = pattern[platform].exec(url.pathname)?.[1]
-  if (!id) throw new Error('链接中没有可识别的作品 ID')
-  return { platform, source_id: id, url: url.origin + url.pathname }
-}
-
-export function identifyLink(data, url, title) {
-  const result = videoIdentity(url)
-  const existing = matchingPlatform(data, result.platform, result.source_id, result.url).show
-  return { ...result, existing: existing ? { id: existing.id, title: existing.title } : null,
-    candidates: title ? data.shows.filter(show => show.id !== existing?.id
-      && (show.title.includes(title) || title.includes(show.title))).slice(0, 10).map(({ id, title }) => ({ id, title })) : [] }
-}
-
-export function saveLink(data, row, id, quick = false) {
-  const identified = identifyLink(data, row.detail_url)
-  if (identified.platform === '豆瓣' || row.platform && row.platform !== identified.platform) throw new Error('作品链接必须匹配所选视频平台')
-  const linked = row.show_id || row.link_show_id
-  if (identified.existing && identified.existing.id !== Number(linked)) throw new Error('请明确关联该链接对应的已有作品')
-  const show = linked ? showById(data, linked) : quick ? upsertWork(data, { ...row,
-    platform: identified.platform, source_id: identified.source_id, source_url: identified.url }, 'manual') : null
-  if (!show) throw new Error('请先选择作品')
-  const previous = id ? data.links.find(link => link.id === Number(id)) : data.links.find(link =>
-    link.detail_url === identified.url && link.show_id === show.id)
-  if (id && !previous) throw new Error('链接不存在')
-  const calendarUrl = safeUrl(row.calendar_url)
-  const ratingUrl = safeUrl(row.douban_url)
-  if (ratingUrl && videoIdentity(ratingUrl).platform !== '豆瓣') throw new Error('豆瓣 URL 无效')
-  if (calendarUrl && hostPlatform[new URL(calendarUrl).hostname] !== identified.platform) throw new Error('日历链接须与视频平台一致')
-  if (row.mode === 'manual' && !row.reviewed_at) throw new Error('请填写人工核对日期')
-  if (!matchingPlatform(data, identified.platform, identified.source_id, identified.url).item) {
-    upsertWork(data, { title: show.title, category: show.category, link_show_id: show.id,
-      platform: identified.platform, source_id: identified.source_id, source_url: identified.url }, 'manual')
-  }
-  const item = { id: previous?.id ?? recordId(data), show_id: show.id, title: show.title, platform: identified.platform,
-    detail_url: identified.url, calendar_url: calendarUrl, douban_url: ratingUrl, notes: row.notes || '',
-    mode: row.mode === 'manual' ? 'manual' : 'link', enabled: row.enabled !== false,
-    reviewed_at: row.reviewed_at ? timestamp(row.reviewed_at) : null, updated_at: beijingDate() }
-  if (previous) Object.assign(previous, item)
-  else data.links.push(item)
-  return item
-}

@@ -4,6 +4,7 @@ import { readActivities } from './library'
 import { compareMatches as byStart, displayMoment, statuses } from './competitions'
 import { formats, kinds, roles, sections, ticketKinds } from './liveEvents'
 import EventEditor from './EventEditor.vue'
+import ManualAdd from './ManualAdd.vue'
 
 const props = defineProps({ kind: String, eventId: String })
 const base = computed(() => `#/events/${props.kind}`)
@@ -85,8 +86,8 @@ onUnmounted(() => {
           <button type="submit" class="tracker-button secondary">筛选</button>
         </form>
         <details class="events-panel" :open="editing" @toggle="editing = $event.target.open">
-          <summary>新增或导入{{ kinds[kind] }}</summary>
-          <EventEditor :kind="kind" :categories="data.categories" @saved="saved" />
+          <summary>添加{{ kinds[kind] }}</summary>
+          <ManualAdd :kind="kind" :categories="data.categories" @saved="saved" />
         </details>
         <p v-if="!data.items.length" class="state">暂无匹配活动。</p>
         <ul v-else class="event-cards">
@@ -109,11 +110,11 @@ onUnmounted(() => {
         <p v-if="bundle.festival?.edition">届次 {{ bundle.festival.edition }}</p>
         <p v-if="bundle.event.description">{{ bundle.event.description }}</p>
         <p class="muted">来源核对 {{ displayMoment(bundle.event.observed_at) }} · 版本 {{ data.version }}</p>
-        <a :href="bundle.event.source_url" target="_blank" rel="noopener noreferrer" class="source-link">查看活动出处</a>
+        <a v-if="bundle.event.source_url" :href="bundle.event.source_url" target="_blank" rel="noopener noreferrer" class="source-link">查看活动出处</a>
       </section>
       <details class="events-panel" :open="editing" @toggle="editing = $event.target.open">
         <summary>编辑活动资料</summary>
-        <EventEditor :key="data.version" :kind="kind" :initial="data" @saved="saved" />
+        <EventEditor :key="data.version" :kind="kind" :initial="data" @saved="saved" @cancelled="editing=false" />
       </details>
       <section v-if="bundle.people.length" class="events-panel">
         <h2>艺人、嘉宾与主办方</h2>

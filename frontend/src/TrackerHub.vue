@@ -175,10 +175,6 @@ onUnmounted(() => {
         </article>
       </template>
       <p v-if="view === 'messages'" class="state">本地日程和更新可在「日历」与「我的关注」查看。</p>
-      <section v-if="view === 'sources'" class="hub-panel">
-        <p>来源由你自行保存与核对。</p>
-        <a href="#links-panel" class="tracker-button secondary">管理影视链接</a>
-      </section>
       <template v-if="view === 'display' && display">
         <h2>首页分类</h2>
         <div v-for="(key, index) in display.categories" :key="key" class="hub-controls hub-panel">

@@ -36,6 +36,8 @@ onUnmounted(() => window.removeEventListener('tracker-library-changed', load))
   <p v-if="error" class="error" role="alert">{{ error }}</p>
   <p v-else-if="!show" role="status">正在读取作品…</p>
   <article v-else class="work-detail">
+    <p v-if="show.notes">备注 · {{ show.notes }}</p>
+    <section v-if="show.links?.length"><h3>已有链接</h3><p v-for="link in show.links" :key="link.id"><a :href="link.detail_url" target="_blank" rel="noopener noreferrer">{{ link.platform }}作品链接</a> <a v-if="link.calendar_url" :href="link.calendar_url" target="_blank" rel="noopener noreferrer">追剧日历</a></p></section>
     <div class="detail-head">
       <img v-if="show.poster_url && !brokenPoster" :src="show.poster_url" :alt="`${show.title}海报`" @error="brokenPoster = true">
       <div>
@@ -53,7 +55,7 @@ onUnmounted(() => window.removeEventListener('tracker-library-changed', load))
       <ReleaseList v-if="releases.length" :rows="releases" />
       <p v-else class="muted">暂无已录入的发行记录。</p>
       <details v-if="pastReleases.length"><summary>发行变更历史（{{ pastReleases.length }}）</summary><ReleaseList :rows="pastReleases" /></details>
-      <a class="tracker-button secondary" href="#/tools">导入或编辑发行记录</a>
+      <a class="tracker-button secondary" href="#local-editor">编辑发行记录</a>
     </section>
     <section v-else>
       <h2>排期</h2>

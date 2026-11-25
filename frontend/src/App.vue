@@ -22,14 +22,14 @@ const desktop = [
   { id: 'competitions', href: '#/competitions/esports', label: '赛事', icon: '⚑' },
   { id: 'events', href: '#/events/performance', label: '演出', icon: '♪' },
   { id: 'activities', href: '#/events/activity', label: '活动', icon: '◇' }, mobile[2],
-  { ...mobile[3], label: '我的关注' }, { id: 'tools', label: '导入与来源', icon: '⇥' },
+  { ...mobile[3], label: '我的关注' },
 ]
 const titles = {
   home: '首页', discover: '发现', media: '影视', calendar: '日历',
-  follows: '我的关注', tools: '导入与来源', account: '我的本地数据', detail: '作品详情', competitions: '赛事', events: '现场与活动',
-  'film-calendar': '影视七日日历', watchlist: '影视观看进度', messages: '消息中心', sources: '数据源', settings: '首页设置',
+  follows: '我的关注', account: '我的本地数据', detail: '作品详情', competitions: '赛事', events: '现场与活动',
+  'film-calendar': '影视七日日历', watchlist: '影视观看进度', messages: '消息中心', settings: '首页设置',
 }
-const hubViews = { home: 'home', follows: 'follows', calendar: 'calendar', messages: 'messages', sources: 'sources', settings: 'display' }
+const hubViews = { home: 'home', follows: 'follows', calendar: 'calendar', messages: 'messages', settings: 'display' }
 const route = ref(resolveRoute(window.location.hash))
 const trackerAvailable = ref(false)
 const edited = ref(false)
@@ -96,7 +96,6 @@ onUnmounted(() => {
           <a href="#/events/performance"><strong>演出</strong><span>演唱会、巡演与 Livehouse</span></a>
           <a href="#/events/festival"><strong>音乐节</strong><span>多日阵容、舞台与票务</span></a>
           <a href="#/events/activity"><strong>其他活动</strong><span>展览、发布会与自定义分类</span></a>
-          <a href="#/tools"><strong>导入与来源</strong><span>影视链接、截图校正与数据导入</span></a>
         </div>
         <LocalBackup v-if="route.page === 'account'" @restored="libraryVersion++" />
         <PwaPanel v-if="route.page === 'account'" />
@@ -114,8 +113,8 @@ onUnmounted(() => {
         :aria-current="route.page === item.id
           || (item.id === 'calendar' && route.page === 'film-calendar')
           || (item.id === 'follows' && route.page === 'watchlist')
-          || (item.id === 'account' && ['settings','sources','messages'].includes(route.page))
-          || (item.id === 'discover' && ['media', 'detail', 'tools', 'competitions', 'events'].includes(route.page)) ? 'page' : undefined">
+          || (item.id === 'account' && ['settings','messages'].includes(route.page))
+          || (item.id === 'discover' && ['media', 'detail', 'competitions', 'events'].includes(route.page)) ? 'page' : undefined">
         <i aria-hidden="true">{{ item.icon }}</i>{{ item.label }}
       </a>
     </nav>

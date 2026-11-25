@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { resolveRoute } from './navigation.js'
 
-test('navigation supports direct links and old import destinations', () => {
+test('navigation supports active menus and retires import destinations', () => {
   assert.deepEqual(resolveRoute('#/follows'), { page: 'follows', anchor: '' })
   assert.deepEqual(resolveRoute('#show-95'), { page: 'media', anchor: 'show-95' })
   assert.deepEqual(resolveRoute('#/media/95'), { page: 'detail', anchor: '', showId: '95' })
@@ -14,7 +14,7 @@ test('navigation supports direct links and old import destinations', () => {
   assert.deepEqual(resolveRoute('#calendar-section'), { page: 'film-calendar', anchor: 'calendar-section' })
   assert.deepEqual(resolveRoute('#/calendar'), { page: 'calendar', anchor: '' })
   for (const anchor of ['smart-import', 'current-work', 'links-panel']) {
-    assert.deepEqual(resolveRoute(`#${anchor}`), { page: 'tools', anchor })
+    assert.deepEqual(resolveRoute(`#${anchor}`), { page: 'home', anchor: '' })
   }
   assert.deepEqual(resolveRoute('#/__proto__'), { page: 'home', anchor: '' })
 })

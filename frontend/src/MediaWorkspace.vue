@@ -2,16 +2,13 @@
 import { computed, onMounted, onUnmounted, ref, nextTick, watch } from 'vue'
 import { readToday, readWeek, listShows, saveWatchState } from './library'
 import { addDays, beijingDate, untilBeijingMidnight, scheduleStats, scheduleSummary, scheduleText, scheduleLabels, audienceLabels } from './calendar'
-import ImportPanel from './ImportPanel.vue'
-import SmartImport from './SmartImport.vue'
-import LinksPanel from './LinksPanel.vue'
+import MediaEditor from './MediaEditor.vue'
+import ManualAdd from './ManualAdd.vue'
+import { videoPlatforms } from './manualForms'
 import ReleaseList from './ReleaseList.vue'
 import { progressDraft, saveProgressDraft } from './offline'
-const smartPanel=ref(null), linkPanel=ref(null)
 const props = defineProps({ route: Object })
 const page = computed(() => props.route.page)
-function importScreenshot(link){smartPanel.value.openForLink(link)}
-async function linkCalendar(link){platform.value=link.platform;query.value=link.title;await changeWeek(0);window.location.hash='calendar-section'}
 import { sourceLabel, platformLatest } from './importing'
 
 const labels = { drama: '国产电视剧', variety: '综艺', animation: '国漫', movie: '电影' }
@@ -22,7 +19,7 @@ const loading = ref(true), error = ref(''), syncError = ref(''), saving = ref({}
 const draftVersions = ref({}), progressConflicts = ref({})
 const brokenPosters = ref({})
 const mutationBusy = computed(() => Object.values(saving.value).some(Boolean))
-const platforms = computed(() => ['腾讯视频','爱奇艺','优酷'])
+const platforms = computed(() => videoPlatforms)
 const showMap = computed(() => new Map(shows.value.map(s => [s.id, s])))
 const visibleShows = computed(() => shows.value.filter(s => matches(s, s.platforms.map(p => p.platform))))
 const selected = computed(() => calendar.value.find(day => day.date === activeDate.value)?.items ?? [])
@@ -102,17 +99,6 @@ async function changeWeek(delta, chosenDate = null) {
     activeDate.value = start
     syncError.value = ''
   } catch (e) { if (version === calendarVersion) syncError.value = `日历加载失败：${e.message}` }
-}
-async function openImported(row) {
-  category.value='';query.value='';platform.value='';favoritesOnly.value=false
-  await loadData()
-  if(row.view==='calendar' && row.update_date) {
-    audience.value=row.audience;scheduleStatus.value=row.schedule_status
-    await changeWeek(0,row.update_date>'9999-12-25'?'9999-12-25':row.update_date)
-    activeDate.value=row.update_date
-  }
-  await nextTick()
-  window.location.hash=row.view==='calendar'?'calendar-section':`/media/${row.show_id}`
 }
 function editProgress(show, value) {
   draftVersions.value[show.id] ??= show.version
@@ -210,11 +196,11 @@ onUnmounted(() => {
 
 <template>
   <div class="media-workspace">
-    <div v-show="page === 'tools'">
-      <div class="notice"><span>来源说明</span>作品与排期由你手动添加或从文件导入，保存在当前浏览器。</div>
-      <SmartImport @return-work="linkPanel.returnTo($event)" ref="smartPanel" :shows="shows" @changed="loadData" @navigate="openImported" />
-      <ImportPanel :shows="shows" @changed="loadData" />
-      <LinksPanel ref="linkPanel" :shows="shows" @changed="loadData" @import="importScreenshot" @calendar="linkCalendar" />
+    <div v-if="page === 'media'">
+      <div class="notice"><span>来源说明</span>作品与排期由你手动填写，保存在当前浏览器。</div>
+      <details class="import-panel" open><summary>添加作品</summary><ManualAdd kind="media" @saved="loadData" /></details>
+      <MediaEditor :shows="shows" @changed="loadData" />
+
     </div>
     <div v-show="['home', 'media', 'film-calendar', 'watchlist'].includes(page)">
       <div v-show="page === 'home'" class="section-head workspace-date"><span class="muted">今日 · 北京时间</span><time>{{ today?.today ?? '—' }}</time></div>
@@ -255,11 +241,11 @@ onUnmounted(() => {
         </section>
         <section v-show="page === 'media' || page === 'watchlist'">
           <div class="section-head"><h2>{{ page === 'watchlist' || favoritesOnly ? '我的追更' : '作品库' }} <span>{{ visibleShows.length }} 部</span></h2><span class="muted">未看集数 = 当前身份最近有效集数 − 已看集数</span></div>
-          <a class="tracker-button secondary" href="#local-editor">添加或编辑作品、排期和评分</a>
+          <a class="tracker-button secondary" href="#local-editor">编辑作品、排期和评分</a>
           <div class="library"><article v-for="show in visibleShows" :key="show.id" :id="`show-${show.id}`">
             <img v-if="show.poster_url && !brokenPosters[show.id]" class="library-poster" :src="show.poster_url" :alt="`${show.title}海报`" @error="brokenPosters[show.id] = true">
             <div v-else class="poster-placeholder">海报<br>暂无数据</div>
-            <div class="library-info"><h3>{{ show.title }}</h3><div v-for="l in (linkPanel?.links || []).filter(l=>l.show_id===show.id)" :key="l.id"><p>{{l.platform}} · {{l.reviewed_at || '未核对'}} · {{l.mode==='manual'?'人工核对':'仅保存链接'}}</p><a :href="l.detail_url" target="_blank" rel="noopener noreferrer">官网详情</a> <a v-if="l.calendar_url" :href="l.calendar_url" target="_blank" rel="noopener noreferrer">追剧日历</a> <button @click="importScreenshot(l)" :disabled="!l.enabled">截图导入</button></div><p class="source-badge">{{ show.is_mock ? "模拟数据" : [...new Set(show.platforms.map(p => sourceLabel(p.source_kind)))].join(" / ") }}</p><p>{{ value(labels[show.category]) }} · {{ show.platforms.map(p => p.platform==='芒果TV'?'芒果TV（停用平台）':p.platform).join(' / ') || '暂无数据' }}</p><p>{{ show.category === 'movie' ? '首映' : '开播' }} {{ value(show.premiere_date) }}</p>
+            <div class="library-info"><h3>{{ show.title }}</h3><p class="source-badge">{{ show.is_mock ? "模拟数据" : [...new Set(show.platforms.map(p => sourceLabel(p.source_kind)))].join(" / ") }}</p><p>{{ value(labels[show.category]) }} · {{ show.platforms.map(p => p.platform==='芒果TV'?'芒果TV（停用平台）':p.platform).join(' / ') || '暂无数据' }}</p><p>{{ show.category === 'movie' ? '首映' : '开播' }} {{ value(show.premiere_date) }}</p>
               <template v-if="show.category !== 'movie'"><p>{{ "最新有效快照" }} {{ latest(show).latest_period ? `${latest(show).latest_period}期` : value(latest(show).latest_episode) }} / 总 {{ value(show.total_episodes) }} {{ show.category === "variety" ? "期" : "集" }}</p><p>有效快照 {{ value(latest(show).latest_as_of) }}</p><div v-if="!show.is_mock" class="platform-details"><details v-for="p in show.platforms" :key="p.id"><summary>{{ p.platform }}{{ p.platform==='芒果TV'?'（停用平台）':'' }} · {{ sourceLabel(p.source_kind) }}</summary><p>{{ p.title }} · 开播 {{ value(p.premiere_date) }} · 总 {{ value(p.total_episodes) }} 集/期</p><p>会员 {{ value(p.observations.vip.latest_episode) }} · 免费 {{ value(p.observations.free.latest_episode) }} · SVIP {{ value(p.observations.svip?.latest_episode) }} · 身份未知 {{ value(p.public_observation?.latest_episode ?? p.public_observation?.latest_period) }}</p><p>信息时间 {{ value(p.data_captured_at ?? p.public_observation?.latest_as_of) }} · {{ p.source_note }}</p><a v-if="p.source_url" :href="p.source_url" target="_blank" rel="noopener noreferrer">查看作品出处</a></details></div><p>已看 {{ show.watched_episodes }} 集 · 剩余未看 {{ value(remaining(show)) }} 集</p>
               </template>
               <a :href="`#/media/${show.id}`" class="source-link work-detail-link">查看作品详情</a>

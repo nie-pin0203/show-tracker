@@ -5,7 +5,7 @@ import { eventTypes, outcomes, sections, statuses } from './competitions'
 import { useOfflineForm } from './useOfflineForm'
 
 const props = defineProps({ kind: String, initial: Object, disciplines: Array })
-const emit = defineEmits(['saved'])
+const emit = defineEmits(['saved', 'cancelled'])
 const now = () => new Date().toISOString().replace(/\.\d{3}Z$/, 'Z')
 const fresh = () => ({
   discipline: { kind: props.kind, code: '', name: '' },
@@ -18,7 +18,7 @@ const { previous, restored, restore, clear } = useOfflineForm(bundle,
   `competition/${props.kind}/${props.initial?.id || 0}`, props.initial?.version || 0,
   draft => draft?.discipline?.kind === props.kind && draft.event && Array.isArray(draft.matches)
     && Array.isArray(draft.participants) && Array.isArray(draft.standings))
-const mode = ref('manual'), file = ref(null), preview = ref(null), approved = ref(false)
+const preview = ref(null), approved = ref(false)
 const busy = ref(false), error = ref('')
 const teams = computed(() => bundle.value.participants.filter(p => p.kind === 'team' && p.source_id))
 const current = computed(() => props.initial?.bundle)
@@ -32,28 +32,13 @@ function chooseDiscipline(event) {
   const item = props.disciplines?.find(d => d.code === event.target.value)
   if (item) Object.assign(bundle.value.discipline, item)
 }
-watch([bundle, file, mode], () => { preview.value = null; approved.value = false }, { deep: true })
-
-async function readFile(event) {
-  file.value = null
-  error.value = ''
-  const selected = event.target.files[0]
-  if (!selected) return
-  try {
-    if (selected.size > 1024 * 1024 || !selected.name.toLowerCase().endsWith('.json')) throw new Error('请选择 1 MiB 以内的 JSON 文件')
-    const data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(await selected.arrayBuffer()))
-    if (data?.discipline?.kind !== props.kind) throw new Error('文件中的项目类型与当前赛事页面不符')
-    file.value = data
-  } catch (e) { error.value = e.message }
-}
+watch(bundle, () => { preview.value = null; approved.value = false }, { deep: true })
 
 async function run(action) {
   error.value = ''
   busy.value = true
   try {
-    const content = mode.value === 'file'
-      ? file.value
-      : JSON.parse(JSON.stringify(bundle.value, (_, v) => v === '' ? null : v))
+    const content = JSON.parse(JSON.stringify(bundle.value, (_, v) => v === '' ? null : v))
     if (!content) throw new Error('请先选择文件')
     const identity = props.initial ? { competition_id: props.initial.id, version: props.initial.version } : {}
     const write = action === 'commit' ? commitActivity : reviewActivity
@@ -76,13 +61,7 @@ async function run(action) {
       <button type="button" @click="restore">载入草稿并重新核对差异</button>
     </p>
     <fieldset :disabled="busy">
-      <label v-if="!initial">录入方式
-        <select v-model="mode"><option value="manual">手动录入</option><option value="file">导入 JSON</option></select>
-      </label>
-      <label v-if="mode === 'file'">含一项赛事的 UTF-8 JSON 文件
-        <input type="file" accept=".json,application/json" @change="readFile">
-      </label>
-      <template v-else>
+      <template>
         <p class="muted">时间可填写 YYYY-MM-DD 或带偏移的 ISO 时间（如 2026-11-22T19:00+08:00）。核对时间须带时刻和时区。</p>
         <div class="editor-grid">
           <label v-if="!initial && disciplines?.length">使用已有{{ labels.discipline }}
@@ -93,6 +72,7 @@ async function run(action) {
           <label>赛事源标识<input v-model="bundle.event.source_id" :readonly="!!initial" maxlength="100"></label>
           <label>赛事名称<input v-model="bundle.event.title" maxlength="200"></label>
           <label>类型<select v-model="bundle.event.event_type"><option v-for="(name, value) in eventTypes" :key="value" :value="value">{{ name }}</option></select></label>
+          <label>备注<textarea v-model="bundle.event.description" maxlength="1000"></textarea></label>
           <label>赛季 / 届次<input v-model="bundle.event.season" maxlength="200"></label>
           <label>开始时间<input v-model="bundle.event.starts_at"></label>
           <label>结束时间<input v-model="bundle.event.ends_at"></label>
@@ -160,7 +140,7 @@ async function run(action) {
           <button type="button" @click="bundle.standings.push(blankStanding())">添加排名快照</button>
         </details>
       </template>
-      <button type="submit" class="tracker-button">{{ busy ? '处理中…' : '核对导入预览' }}</button>
+      <button type="submit" class="tracker-button">{{ busy ? '处理中…' : '核对修改预览' }}</button>
       <p v-if="error" class="error" role="alert">{{ error }}</p>
       <section v-if="preview">
         <p v-if="!preview.changes.length" role="status">内容与当前版本一致，无需重复保存。</p>
@@ -175,6 +155,7 @@ async function run(action) {
           <button type="button" class="tracker-button" :disabled="!approved" @click="run('commit')">确认保存</button>
         </template>
       </section>
+    <button type="button" class="tracker-button secondary" @click="bundle=JSON.parse(JSON.stringify(initial.bundle));preview=null;emit('cancelled')">取消</button>
     </fieldset>
   </form>
 </template>
